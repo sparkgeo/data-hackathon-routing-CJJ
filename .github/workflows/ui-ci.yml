@@ -41,13 +41,17 @@ jobs:
           cache: 'npm'
           cache-dependency-path: routing-ui/package-lock.json
 
+      # Install
+      - name: INSTALL
+        run: npm install
+
       # Build
       - name: BUILD
-        run: npm run build
+        run: npm run build --base=/${{ github.event.repository.name }}/
 
-      # Test
-      - name: TEST
-        run: npm run test
+      # # Test
+      # - name: TEST
+      #   run: npm run test
 
       # Upload dist artifacts
       - uses: actions/upload-artifact@v3
@@ -93,7 +97,7 @@ jobs:
     # # Manual deployment
     # # See https://devblogs.microsoft.com/devops/i-need-manual-approvers-for-github-actions-and-i-got-them-now/
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           token: ${{ env.GITHUB_TOKEN }}
 
@@ -102,7 +106,7 @@ jobs:
           node-version: "16"
 
       # Download dist artifacts
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v3
         with:
           name: dist
           path: dist/
