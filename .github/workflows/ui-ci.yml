@@ -1,10 +1,5 @@
 name: App UI CI
 
-defaults:
-  run:
-    working-directory: routing-ui
-
-
 on:
   push:
     # Run on all branches
@@ -23,6 +18,10 @@ on:
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+defaults:
+  run:
+    working-directory: routing-ui
 
 jobs:
 
@@ -57,7 +56,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: dist
-          path: dist/
+          path: routing-ui/dist/
 
       # Upload coverage artifacts
       # - uses: actions/upload-artifact@v2
