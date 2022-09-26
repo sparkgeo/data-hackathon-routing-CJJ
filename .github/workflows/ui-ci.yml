@@ -39,6 +39,7 @@ jobs:
         with:
           node-version: "16"
           cache: 'npm'
+          cache-dependency-path: routing-ui/package-lock.json
 
       # Build
       - name: BUILD
