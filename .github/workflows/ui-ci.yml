@@ -1,5 +1,10 @@
 name: App UI CI
 
+defaults:
+  run:
+    working-directory: routing-ui
+
+
 on:
   push:
     # Run on all branches
