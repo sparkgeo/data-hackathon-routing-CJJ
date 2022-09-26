@@ -8,18 +8,21 @@ Repo for Data Guild Hackathon 2022 - Team CJJ: Chloe, Joe and Justin
 
 ## Backend
 - Supabase: ref#: nzemrgdvuxghaitjyojn
-    - PostGIS, pgRouting
+    - PostGIS (3.1 USE_GEOS=1 USE_PROJ=1 USE_STATS=1), pgRouting (3.3.0)
 
 ## Frontend
+- vite, react
+- netlify
 - leaflet
-- 
 
 
 ## Tasks
 1. Collect data
    1. Streets
    2. Addresses
-   3. ICBC Accident data
-2. Massage Data for PostGIS / pgRouting
+   3. ICBC Accident data2. Massage Data for PostGIS / pgRouting
+   1. Crash location -> point snap? 
 3. Frontend
-   1. 
+   1. React setup
+   2. Leaflet setup
+   3. 
