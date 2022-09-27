@@ -3,9 +3,12 @@ import './App.css'
 import BottomNav from './BottomNav'
 import Sheet from 'react-modal-sheet';
 import Map from './Map';
+import LocationAutocomplete from './LocationAutocomplete';
 
 export default function App() {
   const [showSheet, setShowSheet] = useState(false)
+  const [startLocation, setStartLocation] = useState()
+  const [endLocation, setEndLocation] = useState()
 
   const handleClickDirections = () => {
     setShowSheet(true)
@@ -22,16 +25,22 @@ export default function App() {
           initialSnap={2}
           >
           <Sheet.Container>
-            <Sheet.Header />
+            <Sheet.Header/>
             <Sheet.Content>
-              <div class="container mx-auto">
-                <h1 class="text-xl leading-7">Cycle routes</h1>
-                <input type="text" placeholder="Starting point" className="input w-full max-w-xs" />
-                <input type="text" placeholder="Destination" className="input w-full max-w-xs" />
+              <div className="container mx-auto px-5 md:px-10 h-full">
+                <h1 className="text-xl mb-6">Cycle routes</h1>
+                <form className="columns-1 md:columns-2">
+                  <div className="mb-4 break-after-auto" >
+                    <LocationAutocomplete placeholder="Start location" setLocation={setStartLocation}/>
+                  </div>
+                  <div className="mb-4">
+                    <LocationAutocomplete placeholder="Destination" setLocation={setEndLocation}/>
+                  </div>
+                </form>
               </div>
             </Sheet.Content>
           </Sheet.Container>
-          <Sheet.Backdrop />
+          {/* <Sheet.Backdrop /> */}
       </Sheet>
     </>
   );
