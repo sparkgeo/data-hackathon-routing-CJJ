@@ -9,10 +9,11 @@ Repo for Data Guild Hackathon 2022 - Team CJJ: Chloe, Joe and Justin
 ## Backend
 - Supabase: ref#: nzemrgdvuxghaitjyojn
     - PostGIS (3.1 USE_GEOS=1 USE_PROJ=1 USE_STATS=1), pgRouting (3.3.0)
+- data loaded with ogr2ogr: `ogr2ogr -f "PostgreSQL" PG:"host=db.nzemrgdvuxghaitjyojn.supabase.co user=postgres dbname=postgres password=hunter2" "public-streets.geojson" -nln public_streets_staging`
 
 ## Frontend
 - vite, react
-- netlify
+- github pages
 - leaflet
 
 
@@ -43,6 +44,18 @@ let { data, error } = await supabase
 
 if (error) console.error(error)
 else console.log(data)
+```
+
+### Get a route without costs
+```http
+POST https://nzemrgdvuxghaitjyojn.supabase.co/rest/v1/rpc/route_nocost
+Content-Type: application/json
+apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im56ZW1yZ2R2dXhnaGFpdGp5b2puIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NjQyMDM3MzMsImV4cCI6MTk3OTc3OTczM30.hNB_yvwYCn-5b65jnTX6wCsm7B1JjzKIflIEtMvzgEM
+
+{
+  "loc_from": "1311 E 18th", 
+  "loc_to": "1116 Bute" 
+}
 ```
 
 ### Query Addresses
