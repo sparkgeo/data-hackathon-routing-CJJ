@@ -7,9 +7,7 @@ const LocationAutocomplete = ({placeholder, setLocation}) => {
 
   return (
     <Downshift
-    onChange={(selection) =>
-      setLocation(selection)
-    }
+    onChange={(selection) => setLocation(selection)}
     itemToString={(item) => {
       return (item ? `${item.civic_number} ${item.std_street}` : '')
     }}

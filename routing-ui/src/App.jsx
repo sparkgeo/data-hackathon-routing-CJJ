@@ -24,12 +24,17 @@ export default function App() {
       // Get a route
       postData(`https://nzemrgdvuxghaitjyojn.supabase.co/rest/v1/rpc/${urlSuffix}`,
       {
-        "loc_from": `${startLocation.std_street} ${startLocation.std_street}`, 
-        "loc_to": `${endLocation.std_street} ${endLocation.std_street}`
+        "loc_from": `${startLocation.civic_number} ${startLocation.std_street}`, 
+        "loc_to": `${endLocation.civic_number} ${endLocation.std_street}`
       })
         .then((data) => {
           console.log('setRouteGeoJSON', data)
-          setRouteGeoJSON(data)
+          if (data.features?.length) {
+            setRouteGeoJSON(data)
+          } else {
+            setRouteGeoJSON()
+
+          }
         })
         .catch(error => {
           setRouteGeoJSON()
