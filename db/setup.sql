@@ -399,6 +399,39 @@ language 'sql';
 
 
 
+
+--drop function route;
+create or replace function route_nocost(loc_from text, loc_to text)
+returns json
+as $$
+with query as (
+SELECT
+    d.seq, d.node, d.edge, d.cost, e.wkb_geometry AS edge_geom
+FROM                                                                        
+    pgr_dijkstra(
+    -- edges
+        'SELECT ogc_fid AS id, source, target, length AS cost FROM public_streets',
+    -- source node
+        (SELECT routing_vert FROM addressess WHERE fts @@ unbounded_tsquery(loc_from)),
+    -- target node                                                                                   
+        (SELECT routing_vert FROM addressess WHERE fts @@ unbounded_tsquery(loc_to)),
+        FALSE
+    ) as d                                        
+    LEFT JOIN public_streets AS e ON d.edge = e.ogc_fid where edge <> -1
+ORDER BY d.seq
+)
+select json_build_object (
+	'type', 'FeatureCollection',
+	'features', json_agg(ST_AsGeoJson(query.*)::json)
+) 
+from query;
+$$
+language 'sql';
+
+
+
+
+
 --- NEW ROUTING FUNCTION WITH COSTS
 
 create or replace function route(loc_from text, loc_to text)
@@ -412,13 +445,15 @@ FROM
     -- edges
         'SELECT id, source, target, (length/10 + streetrank*2 + (casualties/369::float)*655) AS cost FROM public_streets_topology_staging where source is not null',
     -- source node
-        (SELECT crash_routing_vert FROM addressess_staging  WHERE fts @@ to_tsquery('4677 & Drummond')),
+        (SELECT crash_routing_vert FROM addressess_staging  WHERE fts @@ unbounded_tsquery(loc_from) limit 1),
     -- target node                                                                                   
-        (SELECT crash_routing_vert FROM addressess_staging WHERE fts @@ to_tsquery('1116 & Bute')),
+        (SELECT crash_routing_vert FROM addressess_staging WHERE fts @@ unbounded_tsquery(loc_to) limit 1),
         FALSE
     ) as d                                        
     LEFT JOIN public_streets_topology_staging AS e ON d.edge = e.id
-ORDER BY d.seq
+where e.geom is not null
+    ORDER BY d.seq
+
 )
 select json_build_object (
 	'type', 'FeatureCollection',
@@ -427,6 +462,31 @@ select json_build_object (
 from query;
 $$
 language 'sql';
+
+
+
+
+select route_nocost('7393 West Boulevard', '1116 Bute');
+
+
+select route('4677 Drummond', '1116 Bute');
+
+select route('4667 W 15th', '1116 Bute');
+
+
+select * from addressess_staging as2 where crash_routing_vert is not null;
+
+
+(SELECT civic_number, std_street, crash_routing_vert  FROM addressess_staging as2  WHERE fts @@ unbounded_tsquery('W 15th') and crash_routing_vert is not null limit 1);
+
+'4677 & Drummond' '1116 & Bute'
+
+ (SELECT * FROM addressess_staging  WHERE fts @@ websearch_to_tsquery('4677 Drummond'))
+ 
+ alter table addressess_staging add column full_address text default 
+ 
+ select * from addressess_staging as2;
+
 
 
 --- Routing with no costs
@@ -441,12 +501,13 @@ FROM
     -- edges
         'SELECT id, source, target, length AS cost FROM public_streets_topology_staging where source is not null',
     -- source node
-        (SELECT crash_routing_vert FROM addressess_staging  WHERE fts @@ to_tsquery('4677 & Drummond')),
+        (SELECT crash_routing_vert FROM addressess_staging  WHERE fts @@ unbounded_tsquery(loc_from)),
     -- target node                                                                                   
-        (SELECT crash_routing_vert FROM addressess_staging WHERE fts @@ to_tsquery('1116 & Bute')),
+        (SELECT crash_routing_vert FROM addressess_staging WHERE fts @@ unbounded_tsquery(loc_to)),
         FALSE
     ) as d                                        
     LEFT JOIN public_streets_topology_staging AS e ON d.edge = e.id
+    where e.geom is not null
 ORDER BY d.seq
 )
 select json_build_object (
@@ -459,13 +520,12 @@ language 'sql';
 
 
 
-
 --- autocomplete address
 drop function addressautocomplete;
 create or replace function addressAutocomplete(search text)
 returns table (civic_number text, std_street text, geometry jsonb)
 as $$
-	select civic_number, std_street, st_asgeojson(wkb_geometry)::jsonb from addressess_staging where fts @@ unbounded_tsquery(search)
+	select civic_number, std_street, st_asgeojson(wkb_geometry)::jsonb from addressess_staging where fts @@ unbounded_tsquery(search) and crash_routing_vert is not null
 $$
 language 'sql' immutable;
 
