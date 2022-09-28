@@ -19,8 +19,8 @@ const LocationAutocomplete = ({placeholder, setLocation}) => {
           setInputItems(data)
         })
         .catch(error => {
-          setInputItems([])
-          console.error(error)
+            setInputItems([])
+            console.error(error)
         })
      
     }}

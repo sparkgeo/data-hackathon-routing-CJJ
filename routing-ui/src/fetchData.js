@@ -15,13 +15,14 @@ export async function postData(url = '', data = {}) {
     referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
     body: JSON.stringify(data) // body data type must match "Content-Type" header
   });
-  return response.json(); // parses JSON response into native JavaScript objects
-}
+  if (response.ok) {
+    return response.json();
+  }
 
-// postData('https://example.com/answer', { answer: 42 })
-//   .then((data) => {
-//     console.log(data); // JSON data parsed by `data.json()` call
-//   });
+  const errorData = await response.json()
+
+  throw new Error(errorData.message)
+}
 
 export async function getData(url = '') {
   // Default options are marked with *
@@ -43,7 +44,8 @@ export async function getData(url = '') {
   if (response.ok) {
     return response.json();
   }
-  throw new Error(response.json().then((json) => {
-    throw new Error(json.message)
-  }))
+
+  const errorData = await response.json()
+
+  throw new Error(errorData.message)
 }
